@@ -8,7 +8,7 @@ pipeline {
       stage('Hello') {
          steps {
              script {
-                 output = sh label: '', returnStdout: true, script: 'echo "Hello, World"'
+                 output = sh label: '', returnStdout: true, script: 'echo "ola, World"'
              }
          }
       }
