@@ -3,10 +3,10 @@ def output
 pipeline {
    agent any
    tools {
-    go {"go-1.14 }
-   } 
+    go { go-1.14 }
+   }
    stages {
-      stage('build') {
+      stage('Build') {
          steps {
            sh "go build"
 	 }
