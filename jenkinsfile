@@ -1,21 +1,19 @@
-def output
-
 pipeline {
    agent any
+
    tools {
-    go { "go-1.14" }
+    go { 'go-1.14' }
    }
+
    stages {
-      stage('Copy artifact') {
+      stage('Build') {
          steps {
-            copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example1', selector: lastSuccessful()
+           sh 'go build'
          }
       }
-      stage('Deliver') {
+      stage('Publish artifact') {
          steps {
-            sshagent(['toobox-vagrant-key']) {
-                sh 'scp example1 vagrant@10.10.50.3:~'
-            }
+           archiveArtifacts 'example1'
          }
       }
    }
