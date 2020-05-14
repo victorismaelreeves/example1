@@ -1,32 +1,25 @@
 pipeline {
+   agent any
 
-	agent any
-	
-	tools {
-		go {'go-1.14'}
-	}
-	
-	environment {
-		XDG_CACHE_HOME = '/tmp/.cache'
-		CGO_ENABLED='0'
-	}
-	
-	stages {
-		stage('Get dependencies') { 
-			steps {
-				sh "go get \"github.com/aws/aws-lambda-go/lambda\""
-			}
-		}
-		stage('Build') { 
-			steps {
-				sh 'GOOS=linux GOARCH=amd64 go build -o myLambdaScript myLambdaScript.go'
-				sh 'zip myLambdaScript.zip myLambdaScript'
-			}
-		}
-		stage('Publish') { 
-			steps { 
-				archiveArtifacts 'myLambdaScript.zip'
-			}
-		}
-	}
+   tools {
+    go { 'go-1.14' }
+   }
+
+   stages {
+      stage('Test') {
+         steps {
+           sh 'go test'
+         }
+      }
+      stage('Build') {
+         steps {
+           sh 'go build -o example1'
+         }
+      }
+      stage('Publish artifact') {
+         steps {
+           archiveArtifacts 'example1'
+         }
+      }
+   }
 }
