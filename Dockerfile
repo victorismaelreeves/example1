@@ -1,9 +1,5 @@
-FROM centos:latest
-
-COPY ./example1 /app/example1
-
+FROM golang:alpine
 WORKDIR /app
-
-RUN chmod 777 example1
-
-CMD ./example1
+COPY example1 ./
+EXPOSE 9090
+CMD ["./example1"]
