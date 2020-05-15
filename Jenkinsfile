@@ -1,20 +1,25 @@
 pipeline {
-	agent any
-	stages {
-		stage('Copy artifact') {
-			steps {
-				copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example1', selector: lastSuccessful(), target: 'docker'
-			}
-		}
-		stage('Docker build and upload to ') {
-			steps {
-				script {
-					docker.withRegistry('', 'dockerhub') {					
-						def customImage = docker.build("victorismaelreeves/docker:latest", "./docker")
-						customImage.push()						
-					}
-				}
-			}
-		}
-	}
+   agent any
+   stages {
+      
+      stage('Build image') {
+          steps {
+              sh 'docker build -t victorismaelreeves/docker:latest .'
+          }
+      }
+	   
+      stage('Docker login') {
+    	  steps {
+		  withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
+			sh "sudo docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}"
+		}  
+	  }
+      }
+      
+      stage ('Push image'){
+	  steps {
+		sh "sudo docker push victorismaelreeves/docker:latest"
+	  }      
+      } 
+   }
 }
