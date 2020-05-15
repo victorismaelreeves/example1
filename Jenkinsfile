@@ -4,7 +4,7 @@ pipeline {
       
       stage('Build image') {
           steps {
-              sh 'sudo docker build -t victorismaelreeves/docker:latest .'
+              sh 'docker build -t victorismaelreeves/docker:latest .'
           }
       }
 	   
