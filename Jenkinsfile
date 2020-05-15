@@ -1,5 +1,9 @@
 pipeline {
    agent any
+   parameters {
+       choice(name: 'TARGET_ENV', choices: ['staging', 'production', 'aws'], description: 'Please choose an environment')
+       //gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
+    }
    stages {
       stage('Build image') {
           steps {
