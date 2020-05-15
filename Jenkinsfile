@@ -1,29 +1,33 @@
 pipeline {
-	agent any
-	
-	parameters {
-		choice(name: 'TARGET_ENV', choices: ['staging', 'production', 'ec2'], description: 'Please choose an environment')
-	}
-	
-	stages {
-		stage('Copy artifact') { 
-			steps {
-				copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example1', selector: lastSuccessful()
-			}
-		}
-		stage('Deliver') {
-			steps {
-				ansiblePlaybook become: true, 
-				disableHostKeyChecking: true,
-				credentialsId: 'vagrant-ssh', 
-				inventory: "hosts.ini", 
-				playbook: 'playbook.yml'
-			}
-		}
-		stage('Test') {
-			steps {
-				sh "docker run -v $HOME/workspace/Deploy/environments/${params.TARGET_ENV}:/etc/newman -t postman/newman run \"https://www.getpostman.com/collections/e512d3d2e594071a5cfa\" -e postman_environment.json"
-			}
-		}
-	}
+   agent any
+
+   tools {
+        go {'go-1.14'}
+   }
+
+   stages {
+      stage('Unit Test') {
+          steps {
+              sh 'go test'
+          }
+      }
+      
+      stage('Build') {
+          steps {
+              sh 'go build -o example1'
+          }
+      }
+      
+      stage('Deliver') {
+          steps {
+                 ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'toobox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
+          }
+      }
+
+      stage('Integration Test') {
+          steps {
+             sh 'docker run -t postman/newman:latest run "https://www.postman.com/collections/f813962ffadc9d4b0f03"'
+          }
+      }
+   }
 }
