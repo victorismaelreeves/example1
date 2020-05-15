@@ -1,33 +1,35 @@
-pipeline {
-   agent any
+package main
 
-   tools {
-        go {'go-1.14'}
-   }
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+        "net/http"
+        "github.com/prometheus/client_golang/prometheus/promhttp"
+)
 
-   stages {
-      stage('Unit Test') {
-          steps {
-              sh 'go test'
-          }
-      }
-      
-      stage('Build') {
-          steps {
-              sh 'go build -o example1'
-          }
-      }
-      
-      stage('Deliver') {
-          steps {
-                 ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'toobox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
-          }
-      }
+type Simple struct {
+	Name        string
+	Description string
+	Url         string
+}
 
-      stage('Integration Test') {
-          steps {
-             sh 'docker run -t postman/newman:latest run "https://www.postman.com/collections/f813962ffadc9d4b0f03"'
-          }
-      }
-   }
+func SimpleFactory (host string) Simple {
+	return Simple{"Hello", "World", host}
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	simple := Simple{"Pranav", "Joy", r.Host}
+
+	jsonOutput, _ := json.Marshal(simple)
+
+	fmt.Fprintln(w, string(jsonOutput))
+}
+
+func main() {
+	fmt.Println("Server started")
+	http.HandleFunc("/", handler)
+	http.Handle("/metrics", promhttp.Handler())
+	fmt.Println("Starting monitoring")
+	log.Fatal(http.ListenAndServe(":8888", nil))
 }
