@@ -8,7 +8,7 @@ pipeline {
 	stages {
 		stage('Copy artifact') { 
 			steps {
-				copyArtifacts filter: 'GoServerWithTests', fingerprintArtifacts: true, projectName: 'GoServerWithTests', selector: lastSuccessful()
+				copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example1', selector: lastSuccessful()
 			}
 		}
 		stage('Deliver') {
