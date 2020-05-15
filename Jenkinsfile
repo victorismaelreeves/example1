@@ -20,7 +20,7 @@ pipeline {
        stage ('Push'){
 	  steps {
 		sshagent (credentials: ['toolbox-vagrant-key']) {
-			sh "docker push victorismaelreevesy/docker:latest"
+			sh "docker push victorismaelreeves/docker:latest"
 		}
 	  }      
       }
