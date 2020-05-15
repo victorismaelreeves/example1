@@ -19,14 +19,14 @@ pipeline {
       }
        stage ('Push'){
 	  steps {
-		sshagent (credentials: ['toobox-vagrant-key']) {
+		sshagent (credentials: ['toolbox-vagrant-key']) {
 			sh "docker push victorismaelreevesy/ruby-docker:latest"
 		}
 	  }      
       }
           stage ('Run image as a container'){
 	  steps {
-		  sshagent (credentials: ['toobox-vagrant-key']) {
+		  sshagent (credentials: ['toolbox-vagrant-key']) {
 		  	sh "ssh vagrant@10.10.50.4 docker run -dit --restart always --name web -p 9100:9100 victorismaelreeves/docker:latest"  
 		  }
 	  }
