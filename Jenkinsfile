@@ -22,9 +22,11 @@ pipeline {
 		sh "docker push victorismaelreeves/docker:latest"
 	  }      
       }
-      stage ('Run image'){
+          stage ('Run image as a container'){
 	  steps {
-		sh "docker run -dit --restart always --name web -p 9100:9100 victorismaelreeves/docker:latest"  
+		sshagent (credentials: ['toolbox-vagrant-key']) {
+			sh "ssh vagrant@10.10.50.3 docker run -dit --restart always --name web -p 9100:9100 victorismaelreeves/docker:latest"  
+		}
 	  }
       }
    }
