@@ -3,7 +3,7 @@ pipeline {
 	stages {
 		stage('Copy artifact') {
 			steps {
-				copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example2', selector: lastSuccessful(), target: 'docker'
+				copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example1', selector: lastSuccessful(), target: 'docker'
 			}
 		}
 		stage('Docker build and upload to ') {
