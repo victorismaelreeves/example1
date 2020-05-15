@@ -1,5 +1,9 @@
 pipeline {
    agent any
+   parameters {
+       choice(name: 'TARGET_ENV', choices: ['stagingexam', 'exam'], description: 'Please choose an environment')
+       //gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
+    }
    stages {
       stage('Build image') {
           steps {
@@ -16,7 +20,7 @@ pipeline {
        stage ('Push'){
 	  steps {
 		sshagent (credentials: ['toolbox-vagrant-key']) {
-			sh "docker push victorismaelreevesy/ruby-docker:latest"
+			sh "docker push victorismaelreevesy/docker:latest"
 		}
 	  }      
       }
