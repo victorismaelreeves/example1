@@ -1,32 +1,25 @@
 pipeline {
-
-	agent any
-	
-	tools {
-		go {'go-1.14'}
-	}
-	
-	environment {
-		XDG_CACHE_HOME = '/tmp/.cache'
-		CGO_ENABLED='0'
-	}
-	
-	stages {
-		stage('Get dependencies') { 
-			steps {
-				sh "go get \"github.com/aws/aws-lambda-go/lambda\""
-			}
-		}
-		stage('Build') { 
-			steps {
-				sh 'GOOS=linux GOARCH=amd64 go build -o myLambdaScript myLambdaScript.go'
-				sh 'zip myLambdaScript.zip myLambdaScript'
-			}
-		}
-		stage('Publish') { 
-			steps { 
-				archiveArtifacts 'myLambdaScript.zip'
-			}
-		}
-	}
+   agent any
+   stages {
+      
+      stage('Build image') {
+          steps {
+              sh 'sudo docker build -t victorismaelreeves/docker:latest .'
+          }
+      }
+	   
+      stage('Docker login') {
+    	  steps {
+		  withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
+			sh "sudo docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}"
+		}  
+	  }
+      }
+      
+      stage ('Push image'){
+	  steps {
+		sh "sudo docker push victorismaelreeves/docker:latest"
+	  }      
+      } 
+   }
 }
