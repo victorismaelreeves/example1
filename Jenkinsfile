@@ -1,19 +1,16 @@
 pipeline {
    agent any
 
-   tools {
-        go {'gc-1.14'}
-   }
-
-   stage('Build') {
-          steps {
-              sh 'go build -o example1'
-          }
+   stages {
+      stage('Copy artifact') {
+         steps {
+            copyArtifacts filter: 'example1', fingerprintArtifacts: true, selector: lastSuccessful()
+         }
       }
-   
       stage('Deliver') {
          steps {
-            ansiblePlaybook become: true, credentialsId: 'toolbox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
+            ansiblePlaybook become: true, credentialsId: 'vagrant-ssh', inventory: 'hosts.ini', playbook: 'playbook.yml'
          }
       }
    }
+}
