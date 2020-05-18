@@ -19,15 +19,13 @@ pipeline {
       }
       
       stage('Deliver') {
-          steps {
-                 ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'toolbox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
-          }
-      }
-
-      stage('Integration Test') {
-          steps {
-             sh 'docker run -t postman/newman:latest run "https://www.postman.com/collections/f813962ffadc9d4b0f03"'
-          }
-      }
-   }
+			steps {
+				ansiblePlaybook become: true, 
+				disableHostKeyChecking: true,
+				credentialsId: 'vagrant-ssh', 
+				inventory: "environments/${params.TARGET_ENV}/hosts.ini", 
+				playbook: 'playbook.yml'
+			}
+		}
+	}
 }
