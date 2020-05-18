@@ -20,7 +20,7 @@ pipeline {
       
       stage('Deliver') {
           steps {
-                 ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'toobox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
+                 ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'toolbox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
           }
       }
 
