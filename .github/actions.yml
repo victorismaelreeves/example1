@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  get_to_dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.1.0
+      - name: Let's go!
+        uses: docker/build-push-action@v1
+        with:
+          username: victorismaelreeves
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: victorismaelreeves/docker
+          tags: latest
