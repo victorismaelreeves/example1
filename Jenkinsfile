@@ -8,7 +8,7 @@ pipeline {
 	stages {
 		stage('Copy artifact') { 
 			steps {
-				copyArtifacts filter: 'Class2', fingerprintArtifacts: true, projectName: 'Class2', selector: lastSuccessful()
+				copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'example 12', selector: lastSuccessful()
 			}
 		}
 		stage('Deliver to prod') {
@@ -18,7 +18,7 @@ pipeline {
 				}
 			}
 			steps {
-				ansiblePlaybook become: true, credentialsId: 'vagrant-ssh', inventory: 'environments/production/hosts.ini', playbook: 'playbook.yml'
+				ansiblePlaybook become: true, credentialsId: 'toolbox-agrant-ssh', inventory: 'environments/production/hosts.ini', playbook: 'playbook.yml'
 			}
 		}
 		stage('Test E2E prod') {
