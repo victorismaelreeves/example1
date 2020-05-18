@@ -18,7 +18,7 @@ pipeline {
       
       stage ('Push image'){
 	  steps {
-		sh "sudo docker push victorismaelreeves/docker:latest"
+		sh "docker push victorismaelreeves/docker:latest"
 	  }      
       } 
    }
