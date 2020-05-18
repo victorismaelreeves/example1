@@ -1,33 +1,55 @@
 pipeline {
-   agent any
-
-   tools {
-        go {'go-1.14'}
-   }
-
-   stages {
-      stage('Unit Test') {
-          steps {
-              sh 'go test'
-          }
-      }
-      
-      stage('Build') {
-          steps {
-              sh 'go build -o example1'
-          }
-      }
-      
-      stage('Deliver') {
-          steps {
-                 ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'toolbox-vagrant-key', inventory: 'hosts.ini', playbook: 'playbook.yml'
-          }
-      }
-
-      stage('Integration Test') {
-          steps {
-             sh 'docker run -t postman/newman:latest run "https://www.getpostman.com/collections/0fb9d09f41531188decc"'
-          }
-      }
-   }
+	agent any
+	
+	parameters {
+		gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
+	}
+	
+	stages {
+		stage('Copy artifact') { 
+			steps {
+				copyArtifacts filter: 'Class2', fingerprintArtifacts: true, projectName: 'Class2', selector: lastSuccessful()
+			}
+		}
+		stage('Deliver to prod') {
+			when {
+				expression {
+					params.BRANCH == 'master'
+				}
+			}
+			steps {
+				ansiblePlaybook become: true, credentialsId: 'vagrant-ssh', inventory: 'environments/production/hosts.ini', playbook: 'playbook.yml'
+			}
+		}
+		stage('Test E2E prod') {
+			when {
+				expression {
+					params.BRANCH == 'master'
+				}
+			}
+			steps {
+				sh 'docker run -v $HOME/environments/production:/etc/newman -t postman/newman run "https://www.getpostman.com/collections/e512d3d2e594071a5cfa" -e postman_environment.json'
+			}
+		}
+		stage('Deliver to staging') {
+			when {
+				expression {
+					params.BRANCH == 'staging'
+				}
+			}
+			steps {
+				ansiblePlaybook become: true, credentialsId: 'toolboxvagrant-ssh', inventory: 'environments/staging/hosts.ini', playbook: 'playbook.yml'
+			}
+		}
+		stage('Test E2E staging') {
+			when {
+				expression {
+					params.BRANCH == 'staging'
+				}
+			}
+			steps {
+				sh 'docker run -v $HOME/environments/staging:/etc/newman -t postman/newman run "https://www.getpostman.com/collections/e512d3d2e594071a5cfa" -e postman_environment.json'
+			}
+		}
+	}
 }
