@@ -19,12 +19,12 @@ pipeline {
 		}
 		stage('Build') { 
 			steps {
-				sh 'go build -o myLambdaScript myLambdaScript.go'
+				sh 'go build -o MyLambdaScript MyLambdaScript.go'
 			}
 		}
 		stage('Publish') { 
 			steps { 
-				archiveArtifacts 'myLambdaScript'
+				archiveArtifacts 'MyLambdaScript'
 			}
 		}
 	}
