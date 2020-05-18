@@ -4,7 +4,7 @@ pipeline {
    stages {
       stage('Copy artifact') {
          steps {
-            copyArtifacts filter: 'example1', fingerprintArtifacts: true, selector: lastSuccessful()
+            copyArtifacts filter: 'example1', fingerprintArtifacts: true, projectName: 'simple_ruby_multii',  selector: lastSuccessful()
          }
       }
       stage('Deliver') {
