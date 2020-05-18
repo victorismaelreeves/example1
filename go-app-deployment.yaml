@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: go-app
-        image: pranavjoy/go-docker:latest
+        image: victorismaelreeves/docker:latest
         ports:
         - containerPort: 8888
